@@ -1,0 +1,62 @@
+\begin{longtable}{l*{10}{r}@{\hspace{\tablegroupsep}}*{10}{r}}
+\caption{Ranking fidelity and rank movement for all ACIC 2017 and N\&W settings, computed over 100 reference datasets per setting. All uses all 15 estimators; Excl. removes estimators sharing the simulator outcome-model family. Mean promotion and mean absolute rank shift use positions in the full rankings and are reported for the associated G-comp, aligned AIPW, aligned TMLE, and non-aligned estimators (Rest). Positive promotion indicates a higher rank under the simulator. OLS1 is aligned with OLS2 and excluded from Rest.}\label{tab:results_rho_all} \\
+\toprule
+ & \multicolumn{2}{c}{Rank correlation} & \multicolumn{4}{c}{Mean promotion} & \multicolumn{4}{c}{Mean abs. shift} & \multicolumn{2}{c}{Rank correlation} & \multicolumn{4}{c}{Mean promotion} & \multicolumn{4}{c}{Mean abs. shift} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-7}\cmidrule(lr){8-11}\cmidrule(lr){12-13}\cmidrule(lr){14-17}\cmidrule(lr){18-21}
+Simulator & All & Excl. & G-comp & AIPW & TMLE & Rest & G-comp & AIPW & TMLE & Rest & All & Excl. & G-comp & AIPW & TMLE & Rest & G-comp & AIPW & TMLE & Rest \\
+\midrule
+\endfirsthead
+\caption[]{Ranking fidelity and rank movement for all ACIC 2017 and N\&W settings, computed over 100 reference datasets per setting (continued).} \\
+\toprule
+ & \multicolumn{2}{c}{Rank correlation} & \multicolumn{4}{c}{Mean promotion} & \multicolumn{4}{c}{Mean abs. shift} & \multicolumn{2}{c}{Rank correlation} & \multicolumn{4}{c}{Mean promotion} & \multicolumn{4}{c}{Mean abs. shift} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-7}\cmidrule(lr){8-11}\cmidrule(lr){12-13}\cmidrule(lr){14-17}\cmidrule(lr){18-21}
+Simulator & All & Excl. & G-comp & AIPW & TMLE & Rest & G-comp & AIPW & TMLE & Rest & All & Excl. & G-comp & AIPW & TMLE & Rest & G-comp & AIPW & TMLE & Rest \\
+\midrule
+\endhead
+\midrule
+\multicolumn{21}{r}{Continued on next page} \\
+\endfoot
+\bottomrule
+\endlastfoot
+ & \multicolumn{10}{c}{ACIC IID} & \multicolumn{10}{c}{ACIC Non-additive} \\*
+\cmidrule(lr){2-11}\cmidrule(lr){12-21}
+GB & 0.946 & 0.947 & -0.93 & 0.49 & 0.54 & -0.01 & 1.07 & 0.77 & 1.04 & 0.86 & 0.945 & 0.944 & -0.94 & 0.53 & 0.21 & 0.02 & 0.96 & 0.79 & 0.97 & 0.94 \\*
+NN & 0.814 & 0.856 & -3.48 & 4.46 & 1.52 & -0.21 & 3.52 & 4.48 & 1.56 & 1.57 & 0.848 & 0.885 & -3.23 & 4.07 & 1.31 & -0.18 & 3.31 & 4.09 & 1.39 & 1.38 \\*
+OLS2 & 0.128 & 0.682 & 12.44 & -3.76 & 2.14 & -2.15 & 12.44 & 3.76 & 2.14 & 3.29 & 0.092 & 0.614 & 12.30 & -3.95 & 2.07 & -2.13 & 12.30 & 3.95 & 2.07 & 3.53 \\*
+RF & 0.804 & 0.881 & 6.42 & -0.54 & -0.32 & -0.46 & 6.42 & 1.18 & 0.62 & 1.53 & 0.684 & 0.803 & 8.63 & -0.13 & -0.81 & -0.64 & 8.63 & 1.19 & 0.89 & 2.09 \\
+\midrule
+ & \multicolumn{10}{c}{ACIC Group-correlated} & \multicolumn{10}{c}{ACIC Heteroskedastic} \\*
+\cmidrule(lr){2-11}\cmidrule(lr){12-21}
+GB & 0.946 & 0.951 & -0.89 & 1.05 & 0.19 & -0.03 & 0.99 & 1.33 & 0.89 & 0.88 & 0.942 & 0.943 & -1.00 & 0.80 & 0.51 & -0.03 & 1.10 & 0.98 & 0.99 & 0.91 \\*
+NN & 0.782 & 0.844 & -3.86 & 4.87 & 1.88 & -0.24 & 3.96 & 4.89 & 1.92 & 1.70 & 0.798 & 0.848 & -3.77 & 4.79 & 1.64 & -0.22 & 3.79 & 4.81 & 1.68 & 1.64 \\*
+OLS2 & 0.155 & 0.743 & 12.52 & -3.58 & 2.13 & -2.17 & 12.52 & 3.58 & 2.13 & 3.06 & 0.141 & 0.707 & 12.69 & -3.69 & 2.12 & -2.16 & 12.69 & 3.69 & 2.12 & 3.20 \\*
+RF & 0.793 & 0.880 & 6.67 & -0.17 & -0.41 & -0.51 & 6.67 & 1.25 & 0.63 & 1.53 & 0.805 & 0.883 & 6.36 & -0.50 & -0.34 & -0.46 & 6.36 & 1.24 & 0.52 & 1.51 \\
+\midrule
+ & \multicolumn{10}{c}{N\&W A, $n=1000$} & \multicolumn{10}{c}{N\&W A, $n=4302$} \\*
+\cmidrule(lr){2-11}\cmidrule(lr){12-21}
+GB & 0.504 & 0.384 & -0.10 & -1.76 & -3.83 & 0.47 & 0.74 & 1.86 & 3.83 & 3.55 & 0.367 & 0.569 & 9.06 & -6.72 & -6.41 & 0.34 & 9.06 & 6.74 & 6.43 & 2.62 \\*
+NN & 0.134 & 0.207 & 9.13 & -3.04 & -0.43 & -0.47 & 9.13 & 3.06 & 1.85 & 4.45 & 0.277 & 0.193 & 0.02 & -1.03 & 3.07 & -0.17 & 0.24 & 1.85 & 3.23 & 4.35 \\*
+OLS2 & 0.474 & 0.495 & 7.32 & -1.71 & -0.50 & -0.86 & 7.32 & 2.09 & 1.14 & 3.33 & 0.104 & 0.116 & 11.04 & 1.60 & 6.07 & -1.70 & 11.04 & 2.08 & 6.11 & 4.19 \\*
+RF & -0.046 & 0.027 & 9.04 & -3.47 & -2.18 & -0.28 & 9.04 & 3.51 & 2.26 & 5.17 & -0.344 & -0.230 & 10.82 & -4.29 & 0.93 & -0.62 & 10.82 & 4.37 & 1.89 & 5.97 \\
+\midrule
+ & \multicolumn{10}{c}{N\&W B, $n=1000$} & \multicolumn{10}{c}{N\&W B, $n=4302$} \\*
+\cmidrule(lr){2-11}\cmidrule(lr){12-21}
+GB & 0.543 & 0.706 & 9.86 & -0.69 & 0.55 & -0.81 & 9.88 & 1.39 & 1.97 & 2.45 & 0.316 & 0.512 & 11.06 & 0.60 & 1.61 & -1.11 & 11.06 & 2.50 & 2.95 & 3.24 \\*
+NN & 0.929 & 0.920 & -0.31 & 0.26 & 0.01 & 0.00 & 0.73 & 0.88 & 0.75 & 1.02 & 0.899 & 0.906 & 0.39 & -0.20 & -0.17 & -0.00 & 1.59 & 1.06 & 1.11 & 1.15 \\*
+OLS2 & 0.936 & 0.933 & 0.38 & 0.45 & 0.35 & -0.12 & 0.46 & 1.01 & 0.81 & 0.87 & 0.854 & 0.913 & 1.79 & 1.33 & 1.29 & -0.44 & 1.85 & 1.73 & 1.61 & 1.14 \\*
+RF & 0.068 & 0.180 & 10.53 & -2.36 & 5.58 & -1.15 & 10.53 & 2.40 & 5.68 & 4.27 & -0.087 & -0.073 & 8.32 & -3.06 & 1.68 & -0.58 & 8.32 & 3.80 & 3.44 & 5.11 \\
+\midrule
+ & \multicolumn{10}{c}{N\&W C, $n=1000$} & \multicolumn{10}{c}{N\&W C, $n=4302$} \\*
+\cmidrule(lr){2-11}\cmidrule(lr){12-21}
+GB & 0.328 & 0.560 & 12.33 & -0.89 & 2.55 & -1.17 & 12.33 & 1.27 & 3.01 & 3.08 & -0.119 & 0.029 & 12.02 & 0.99 & 2.38 & -1.28 & 12.02 & 2.25 & 3.22 & 4.95 \\*
+NN & 0.949 & 0.954 & 1.16 & 0.17 & 0.16 & -0.12 & 1.76 & 0.83 & 0.66 & 0.81 & 0.805 & 0.857 & 3.93 & 0.79 & 0.72 & -0.45 & 4.43 & 1.25 & 1.36 & 1.40 \\*
+OLS2 & 0.978 & 0.975 & 0.12 & 0.08 & 0.15 & -0.03 & 0.18 & 0.58 & 0.65 & 0.49 & 0.957 & 0.946 & 0.03 & -0.07 & -0.14 & -0.04 & 0.11 & 0.67 & 0.48 & 0.71 \\*
+RF & -0.112 & 0.119 & 13.80 & -1.22 & 7.74 & -1.69 & 13.80 & 1.40 & 7.74 & 4.34 & -0.634 & -0.528 & 13.77 & 1.06 & 4.77 & -1.63 & 13.77 & 2.52 & 5.27 & 6.38 \\
+\midrule
+ & \multicolumn{10}{c}{N\&W D, $n=1000$} & \multicolumn{10}{c}{N\&W D, $n=4302$} \\*
+\cmidrule(lr){2-11}\cmidrule(lr){12-21}
+GB & 0.434 & 0.421 & 5.38 & -0.61 & -0.62 & -0.35 & 5.54 & 1.23 & 1.76 & 3.52 & 0.455 & 0.605 & 9.36 & -0.22 & 0.89 & -0.84 & 9.36 & 1.64 & 2.05 & 2.84 \\*
+NN & 0.840 & 0.808 & -0.35 & 0.00 & -0.32 & 0.06 & 0.93 & 1.18 & 0.96 & 1.72 & 0.900 & 0.911 & -0.12 & -0.16 & -0.20 & 0.04 & 2.66 & 0.94 & 0.70 & 1.14 \\*
+OLS2 & 0.700 & 0.729 & 5.50 & 2.81 & 1.85 & -0.90 & 5.50 & 2.93 & 1.97 & 2.07 & 0.524 & 0.827 & 12.51 & 2.07 & 2.72 & -1.57 & 12.51 & 2.29 & 3.14 & 1.97 \\*
+RF & 0.395 & 0.435 & 8.17 & -1.50 & -0.93 & -0.48 & 8.17 & 1.88 & 1.75 & 3.43 & 0.324 & 0.477 & 10.02 & -1.76 & -0.31 & -0.66 & 10.02 & 2.04 & 1.85 & 3.32 \\
+\end{longtable}

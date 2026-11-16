@@ -1,0 +1,54 @@
+\begin{figure*}[htbp]
+\centering
+\begin{tikzpicture}[
+    box/.style={
+        draw,
+        rounded corners,
+        align=center,
+        font=\fontsize{8pt}{10pt}\selectfont,
+        text width=2.4cm,
+        minimum height=0.75cm,
+        inner sep=2.5pt,
+        execute at begin node=\setlength{\parskip}{0pt}
+    },
+    widebox/.style={box, text width=5.4cm},
+    componentbox/.style={box, minimum height=1.4cm},
+    finalbox/.style={widebox, minimum height=1.0cm},
+    heading/.style={font=\fontsize{8pt}{10pt}\selectfont\bfseries, align=center},
+    arrow/.style={-{Latex[length=2.2mm]}, thick}
+]
+
+% The two processes have the same structure: inputs, law and target, performance.
+\node[heading] at (0,0.8) {Target benchmark};
+\node[heading] at (7.8,0.8) {Monte Carlo benchmark};
+
+\node[widebox] (original) at (0,0) {Original causal law \(P_0\)\\ + target covariate distribution \(P_X^{\mathrm{tar}}\)\\ + redrawing scheme};
+\node[widebox] (design) at (7.8,0) {Reference dataset \(\mathcal D_0\) + fitted models\\ + target covariate distribution \(P_X^{\mathrm{tar}}\)\\ + redrawing scheme};
+
+\node[componentbox] (redraw) at (-1.7,-1.7) {Target dataset\\ law\\ \(\mathbb P_{0,n}\)};
+\node[componentbox] (estimand) at (1.7,-1.7) {Target causal\\ estimand\\ \(\Phi_0\)};
+\node[componentbox] (mclaw) at (6.1,-1.7) {Monte Carlo\\ dataset law\\ \(\mathbb P_{MC,n}\)};
+\node[componentbox] (mcvalue) at (9.5,-1.7) {Specified\\ reference value\\ \(\Phi_{MC}\)};
+
+\node[finalbox] (targetbenchmark) at (0,-3.4) {Target ranking\\ \(R_{\mathrm{MSE}}(\mathbb P_{0,n},\Phi_0)\)};
+\node[finalbox] (mcbenchmark) at (7.8,-3.4) {Monte Carlo ranking\\ \(R_{\mathrm{MSE}}(\mathbb P_{MC,n},\Phi_{MC})\)};
+
+\draw[arrow] ([xshift=-1.7cm]original.south) -- (redraw.north);
+\draw[arrow] ([xshift=1.7cm]original.south) -- (estimand.north);
+\draw[arrow] ([xshift=-1.7cm]design.south) -- (mclaw.north);
+\draw[arrow] ([xshift=1.7cm]design.south) -- (mcvalue.north);
+
+\draw[arrow] (redraw.south) -- ([xshift=-1.7cm]targetbenchmark.north);
+\draw[arrow] (estimand.south) -- ([xshift=1.7cm]targetbenchmark.north);
+\draw[arrow] (mclaw.south) -- ([xshift=-1.7cm]mcbenchmark.north);
+\draw[arrow] (mcvalue.south) -- ([xshift=1.7cm]mcbenchmark.north);
+
+\draw[densely dashed, thick] (targetbenchmark.east)
+    -- node[above, font=\fontsize{8pt}{10pt}\selectfont] {\(\approx\)} (mcbenchmark.west);
+\end{tikzpicture}
+
+\captionsetup{font=normalsize}
+\caption{Conceptual exercise: target and Monte Carlo benchmarks. Ideally, the study should approximate the performance that would be obtained with access to the original objects.}
+\label{fig:conceptual_exercise}
+\end{figure*}
+

@@ -1,0 +1,34 @@
+\begin{table*}[!t]
+\centering
+\caption{Estimator summary with associated labels, nuisance models, and aligned simulators.}
+\label{tab:estimators}
+{
+
+\begin{tabular}{p{3.2cm}llll}
+\toprule
+Estimator class & Estimator label & Outcome model & Propensity model & Aligned simulator \\
+\midrule
+OLS (linear effects) & OLS1 & OLS1 & -- & OLS2 \\
+\midrule
+\multirow{4}{3.2cm}{G-computation} & OLS2 G-comp & OLS2 & -- & OLS2 \\
+& GB G-comp & GB & -- & GB \\
+& RF G-comp & RF & -- & RF \\
+& NN G-comp & NN & -- & NN \\
+\midrule
+Inverse probability weighting & GB IPW & -- & GB & -- \\
+\midrule
+\multirow{4}{3.2cm}{Augmented inverse probability weighting} & GB--OLS2 AIPW & OLS2 & GB & OLS2 \\
+& GB--GB AIPW & GB & GB & GB \\
+& GB--RF AIPW & RF & GB & RF \\
+& GB--NN AIPW & NN & GB & NN \\
+\midrule
+\multirow{4}{3.2cm}{Targeted maximum likelihood estimation} & GB--OLS2 TMLE & OLS2 & GB & OLS2 \\
+& GB--GB TMLE & GB & GB & GB \\
+& GB--RF TMLE & RF & GB & RF \\
+& GB--NN TMLE & NN & GB & NN \\
+\midrule
+Bayesian causal forest & BCF G-comp & BCF & GB & -- \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}

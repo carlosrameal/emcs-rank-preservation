@@ -1,0 +1,484 @@
+% !TeX root = Master.tex
+\ifdefined\neutralpreprint
+\newgeometry{top=10mm,bottom=10mm,left=12mm,right=12mm}
+\begin{landscape}
+\fi
+\section{Detailed results}
+\label{app:complete-results}
+
+This appendix complements Section~\ref{sec:results} with detailed MSE, rank-correlation, and rank-movement results, together with distributions of rank correlations, for all four ACIC error structures and all four N\&W designs at both sample sizes.
+
+\ifdefined\neutralpreprint\else
+\newgeometry{top=10mm,bottom=10mm,left=12mm,right=12mm}
+\begin{landscape}
+\fi
+\input{tables/results_mse_all}
+\end{landscape}
+\restoregeometry
+\onecolumn
+
+\begin{landscape}
+\input{tables/results_rho_all}
+\end{landscape}
+
+\begin{figure}[p]\centering
+
+\includegraphics[width=\textwidth,height=0.445\textheight,keepaspectratio]{figures/acic_rhos_contiguous/acic_rhos_combined.png}
+\par\smallskip
+
+\includegraphics[width=\textwidth,height=0.445\textheight,keepaspectratio]{figures/nie_rhos_contiguous/nie_rhos_combined.png}
+\caption{Per-dataset Spearman rank correlations across 100 reference datasets, using all estimators and excluding estimators sharing the simulator's outcome-model family. The upper panels show the four ACIC error structures; the lower panels show N\&W DGPs A--D, with blue and orange points denoting \(n=1000\) and \(n=4302\), respectively. Horizontal black segments indicate means.}
+\label{fig:acic_rho}\label{fig:niea_rho}
+\end{figure}
+\FloatBarrier
+\clearpage
+\twocolumn
+\section{Generators}
+\label{app:generators}
+
+This section describes the implementations of the original designs used to generate reference datasets before any simulator is fitted.
+
+\subsection{ACIC 2017 designs}
+
+The ACIC designs use the fixed \(n=4302\) covariate matrix from the Infant Health and Development Program data, available in the \href{https://github.com/vdorie/aciccomp/tree/master/2017}{ACIC 2017 repository}, with synthetic treatment and outcome mechanisms \cite{hahnAtlanticCausalInference2019}. We use the high-effect, high-noise, strong-confounding setting: \(\xi=2\), \(\eta=5/4\), and \((\kappa_1,\kappa_2)=(3,-1)\), corresponding to case 8 in their Table 2. The fitted models use eight covariates in ACIC and six in N\&W. \authorcite{hahnAtlanticCausalInference2019} distinguish the original covariate matrix from the transformed matrix used by the DGP (their Section 6.2). The formulas below use the design inputs, including indicator recodings of the cigarette-use and race variables, while retaining the original IHDP/ACIC numbering: \(X_1\) is mother's age, \(X_3\) cigarettes per day, \(X_{10}\), \(X_{14}\), and \(X_{15}\) are maternal binary health indicators, \(X_{21}\) is mother's place of birth, \(X_{24}\) is race, and \(X_{43}\) is the child's bilirubin level. Let
+\[
+\begin{aligned}
+f(X)&=X_1+X_{43}+0.3(X_{10}-1),\\
+e(X)&=\left[1+\exp\!\left\{\kappa_1f(X)+\kappa_2\right\}\right]^{-1},\\
+\mu(X)&=-\sin\!\left\{F_{\!\mathcal N}^{-1}(e(X))\right\}+X_{43},\\
+\tau(X)&=\xi\left\{X_3X_{24}+(X_{14}-1)-(X_{15}-1)\right\},\\
+\sigma(X)&=0.4+\frac{X_{21}-1}{15},\\
+\sigma_Y&=\eta\sqrt{\operatorname{Var}_n\!\left\{\mu(X)+e(X)\tau(X)\right\}},
+\end{aligned}
+\]
+where \(F_{\!\mathcal N}^{-1}\) is the standard-normal quantile function and \(\operatorname{Var}_n\) is the variance over the fixed covariate sample. We use the quantile convention of the authors\textquotesingle{} R generator; the PDF instead prints a normal CDF in the definition of \(\mu\). For each reference dataset, treatment is redrawn independently as \(A_i\mid X_i\sim\operatorname{Bernoulli}\{e(X_i)\}\). With independent standard-normal \(\varepsilon_i\), the additive error schemes are
+\[
+\begin{aligned}
+Y_i^{\mathrm{iid}}&=\mu(X_i)+A_i\tau(X_i)+\sigma_Y\varepsilon_i,\\
+Y_i^{\mathrm{group}}&=\mu(X_i)+A_i\tau(X_i)+\sigma_Y\{0.9\varepsilon_i+0.1u_{X_{i,21}}\},\\
+Y_i^{\mathrm{het}}&=\mu(X_i)+A_i\tau(X_i)+\sigma(X_i)\sigma_Y\varepsilon_i,
+\end{aligned}
+\]
+where \(u_1,\ldots,u_{16}\) are independent standard-normal group shocks, independent of the unit-specific errors. For the non-additive design, first define
+\[
+\begin{aligned}
+\widetilde Y_i&=\mu(X_i)+A_i\tau(X_i)+\sigma_Y\varepsilon_i,\\
+a&=\frac1n\sum_{i=1}^n\{\mu(X_i)+e(X_i)\tau(X_i)\},\\
+b&=1.25\sqrt{\sigma_Y^2+\operatorname{Var}_n\!\left\{\mu(X)+e(X)\tau(X)\right\}}.
+\end{aligned}
+\]
+The observed outcome is the nonlinear transformation
+\[
+Y_i=13F_{\mathcal N(a,b^2)}(\widetilde Y_i)-6+\delta_i,
+\qquad
+\delta_i\sim\mathcal N(0,0.01^2),
+\]
+where \(F_{\mathcal N(a,b^2)}\) is the CDF of that normal distribution. The resulting conditional treatment effect is
+\[
+\begin{aligned}
+\tau_{\mathrm{nonlin}}(x)
+=13\Bigg[&
+F_{\!\mathcal N}\!\left(
+\frac{\mu(x)+\tau(x)-a}{\sqrt{\sigma_Y^2+b^2}}
+\right)\\
+&-F_{\!\mathcal N}\!\left(
+\frac{\mu(x)-a}{\sqrt{\sigma_Y^2+b^2}}
+\right)
+\Bigg].
+\end{aligned}
+\]
+\authorcite{hahnAtlanticCausalInference2019} report that the treatment-effect values accompanying the released heteroskedastic data were incorrectly calculated using the non-additive formula (their Section 6.1). Our heteroskedastic benchmark instead uses the additive outcome mechanism above and its conditional effect \(\tau(X)\), rather than those released treatment-effect values.
+
+\subsection{N\&W designs}
+
+For the N\&W designs \cite{nieQuasioracleEstimationHeterogeneous2021}, we use \(d=6\) covariates and generate a new \((X,A,Y)\) sample for each reference dataset. Write
+\[
+\begin{aligned}
+Y&=b(X)+\{A-1/2\}\tau(X)+\varepsilon,\\
+A\mid X&\sim\operatorname{Bernoulli}\{e(X)\},
+\qquad \varepsilon\sim\mathcal N(0,1).
+\end{aligned}
+\]
+Design A draws \(X_j\overset{\mathrm{iid}}{\sim}\operatorname{Uniform}(0,1)\); designs B--D draw \(X_j\overset{\mathrm{iid}}{\sim}\mathcal N(0,1)\). Covariates beyond \(X_5\) are noise covariates. Here \(\operatorname{trim}_{c}(u)=\min(1-c,\max(c,u))\). The functions are
+
+\noindent\textbf{Design A}
+\[
+\begin{aligned}
+e(X)&=\operatorname{trim}_{0.1}\!\left\{\sin(\pi X_1X_2)\right\},\\
+\tau(X)&=(X_1+X_2)/2,\\
+b(X)&=\sin(\pi X_1X_2)+2(X_3-0.5)^2\\
+&\quad+X_4+0.5X_5.
+\end{aligned}
+\]
+\noindent\textbf{Design B}
+\[
+\begin{aligned}
+e(X)&=0.5,\\
+\tau(X)&=X_1+\log(1+e^{X_2}),\\
+b(X)&=\max\!\left\{\max(X_1+X_2,X_3),0\right\}\\
+&\quad+\max(X_4+X_5,0).
+\end{aligned}
+\]
+\noindent\textbf{Design C}
+\[
+\begin{aligned}
+e(X)&=\{1+e^{X_2+X_3}\}^{-1},\\
+\tau(X)&=1,\\
+b(X)&=2\log\!\left(1+e^{X_1+X_2+X_3}\right).
+\end{aligned}
+\]
+\noindent\textbf{Design D}
+\[
+\begin{aligned}
+e(X)&=\{1+e^{-X_1}+e^{-X_2}\}^{-1},\\
+b(X)&=\tfrac12\left[\max(X_1+X_2+X_3,0)+\max(X_4+X_5,0)\right],\\
+\tau(X)&=\max(X_1+X_2+X_3,0)-\max(X_4+X_5,0).
+\end{aligned}
+\]
+
+\clearpage
+\section{Simulators}
+\label{app:simulators}
+
+This appendix describes the outcome models used to generate synthetic datasets within the empirical Monte Carlo design.
+For generic model descriptions, we suppress the generator, reference-dataset, and Monte Carlo draw indices unless needed.
+
+\subsection{Conditional mean--variance simulators}
+
+Let \(\mathcal L=\{\mathrm{OLS2},\mathrm{GB},\mathrm{RF},\mathrm{NN}\}\), indexed by \(l\), be the conditional-mean outcome learners used both to construct simulators and to form causal estimators. Their conditional-mean specifications are reused for the corresponding causal estimators in Appendix~\ref{app:estimators}; the conditional-variance models below are used only to generate simulated outcomes.
+
+The OLS2, gradient-boosting, random-forest, and neural-network simulators use a common location--scale representation that allows for heteroskedasticity,
+\[
+\widetilde Y_i
+=
+\widehat{\mu}_s(X_i,A_i)
++
+\widehat{\sigma}_s(X_i,A_i)\varepsilon_i,
+\]
+where \(\varepsilon_i\overset{\mathrm{iid}}{\sim}\mathcal N(0,1)\). For each simulator, we obtain counterfactual conditional means
+\[
+\widehat{\mu}_{s,0}(X_i)
+=
+\widehat{\mu}_s(X_i,0),
+\qquad
+\widehat{\mu}_{s,1}(X_i)
+=
+\widehat{\mu}_s(X_i,1),
+\]
+and conditional standard deviations \(\widehat{\sigma}_{s,0}(X_i)\) and \(\widehat{\sigma}_{s,1}(X_i)\). A synthetic observed outcome is generated as
+\[
+\begin{aligned}
+\widetilde Y_{i,s}^{g,m,k}
+={}&
+A_i^{g,m}
+\left\{
+\widehat{\mu}_{s,1}^{\,g,m}(X_i^{g,m})
++
+\widehat{\sigma}_{s,1}^{\,g,m}(X_i^{g,m})\varepsilon_{i1}^{(k)}
+\right\}\\
+&+
+\left(1-A_i^{g,m}\right)
+\left\{
+\widehat{\mu}_{s,0}^{\,g,m}(X_i^{g,m})
++
+\widehat{\sigma}_{s,0}^{\,g,m}(X_i^{g,m})\varepsilon_{i0}^{(k)}
+\right\}.
+\end{aligned}
+\]
+
+\subsubsection{OLS2 simulator}
+
+The OLS2 simulator fits the conditional mean as a second-order polynomial in covariates and treatment, including linear terms, squares, and all pairwise interactions. This expansion produces 54 predictor columns in ACIC and 35 in N\&W; accounting for perfect collinearities leaves 48 and 34 independent predictors, respectively, plus an intercept. The conditional variance is estimated by regressing \(\log\{(r_i^{\mathrm{OOF}})^2+\epsilon\}\) on the same terms, where \(r_i^{\mathrm{OOF}}=Y_i-\widehat\mu_{-k(i)}(X_i,A_i)\) are five-fold out-of-fold residuals and \(\epsilon=10^{-6}\widehat{\operatorname{Var}}(r^{\mathrm{OOF}})+10^{-12}\). Exponentiated predictions are rescaled so their average equals the mean squared out-of-fold residual.
+
+\subsubsection{Gradient-boosting simulator}
+
+The GB simulator uses \texttt{HistGradientBoostingRegressor} from Python's scikit-learn library to estimate the conditional mean of \(Y\) given \((X,A)\). Starting from \(f_0(x,a)=\overline Y\), squared-error boosting fits each regression tree \(h_b\) to the current residuals and updates the prediction:
+\[
+\begin{aligned}
+r_{ib} &= Y_i-f_{b-1}(X_i,A_i),\\
+f_b(x,a) &= f_{b-1}(x,a)+\eta h_b(x,a).
+\end{aligned}
+\]
+Here \(\eta\) is the learning rate, and after \(B\) trees the fitted mean is \(\widehat\mu_{\mathrm{GB}}=f_B\). Both GB models use \(\eta=0.05\), at most 500 trees, and a maximum tree depth of 6, without hyperparameter tuning. Tree splits capture nonlinear effects and interactions, including interactions with treatment. Histogram binning speeds up the search for splits.
+
+For the variance, let \(r_i^{\mathrm{OOF}}=Y_i-\widehat\mu_{-k(i)}(X_i,A_i)\) denote five-fold out-of-fold residuals, where \(-k(i)\) excludes the fold containing unit \(i\). A second GB model \(\widehat g\) predicts the log-squared residual target:
+\[
+\begin{aligned}
+v_i &= \log\!\left[(r_i^{\mathrm{OOF}})^2+\epsilon\right],\\
+\widehat\sigma_{\mathrm{GB}}^2(x,a) &= c\exp\!\left\{\widehat g(x,a)\right\}.
+\end{aligned}
+\]
+We set \(\epsilon=10^{-6}\widehat{\operatorname{Var}}(r^{\mathrm{OOF}})+10^{-12}\), using the empirical residual variance with divisor \(n\), to keep the logarithm finite. The multiplier \(c\) makes the average predicted variance equal to the average squared out-of-fold residual.
+
+\subsubsection{Random-forest simulator}
+
+The RF simulator uses \texttt{RandomForestRegressor} from Python's scikit-learn library to estimate the conditional mean of \(Y\) given \((X,A)\). Each regression tree \(h_t\) is fitted to a bootstrap sample, choosing splits to reduce squared error. The forest averages the predictions of \(T\) trees:
+\[
+\widehat\mu_{\mathrm{RF}}(x,a)
+=\frac{1}{T}\sum_{t=1}^{T}h_t(x,a).
+\]
+Here \(h_t(x,a)\) is the mean outcome in the leaf containing \((x,a)\). Both RF models use \(T=800\) trees, all predictors at each split, a minimum leaf size of one, and no maximum depth, without hyperparameter tuning. Tree splits capture nonlinear effects and interactions, while averaging reduces the variability of individual trees.
+
+For the variance, let \(r_i^{\mathrm{OOB}}=Y_i-\widehat\mu_{\mathrm{OOB}}(X_i,A_i)\) denote out-of-bag residuals, where \(\widehat\mu_{\mathrm{OOB}}\) averages only trees whose bootstrap samples exclude unit \(i\). A second RF model \(\widehat g\) predicts the log-squared residual target:
+\[
+\begin{aligned}
+v_i &= \log\!\left[(r_i^{\mathrm{OOB}})^2+\epsilon\right],\\
+\widehat\sigma_{\mathrm{RF}}^2(x,a) &= c\exp\!\left\{\widehat g(x,a)\right\}.
+\end{aligned}
+\]
+We set \(\epsilon=10^{-6}\widehat{\operatorname{Var}}(r^{\mathrm{OOB}})+10^{-12}\), using the empirical residual variance with divisor \(n\), to keep the logarithm finite. The multiplier \(c\) makes the average predicted variance equal to the average squared out-of-bag residual.
+
+\subsubsection{Neural-network simulator}
+
+The NN simulator uses \texttt{MLPRegressor} from Python's scikit-learn library to estimate the conditional mean of \(Y\) given \((X,A)\). After standardizing the predictors with \texttt{StandardScaler}, the network applies two hidden layers and a linear output:
+\[
+\begin{aligned}
+h_\ell &= \operatorname{ReLU}(W_\ell h_{\ell-1}+b_\ell),\qquad \ell=1,2,\\
+\widehat\mu_{\mathrm{NN}}(x,a) &= w_3^{\mathsf T}h_2+b_3.
+\end{aligned}
+\]
+Here \(h_0\) is the standardized vector \((x,a)\), \(\operatorname{ReLU}(u)=\max(0,u)\) acts elementwise, and the weights and biases are fitted by minimizing squared-error loss with an L2 penalty. Both NN models use hidden layers of 64 and 32 units, Adam with initial learning rate \(10^{-3}\), penalty parameter \(\alpha=10^{-4}\), batch size 256, and at most 400 epochs, without hyperparameter tuning. Early stopping uses a 10\% validation split, patience of 25 epochs, and tolerance \(10^{-3}\) in validation \(R^2\). The nonlinear layers capture covariate effects and interactions.
+
+For the variance, let \(r_i^{\mathrm{OOF}}=Y_i-\widehat\mu_{-k(i)}(X_i,A_i)\) denote five-fold out-of-fold residuals, where \(-k(i)\) excludes the fold containing unit \(i\). A second NN model \(\widehat g\) predicts the log-squared residual target:
+\[
+\begin{aligned}
+v_i &= \log\!\left[(r_i^{\mathrm{OOF}})^2+\epsilon\right],\\
+\widehat\sigma_{\mathrm{NN}}^2(x,a) &= c\exp\!\left\{\widehat g(x,a)\right\}.
+\end{aligned}
+\]
+We set \(\epsilon=10^{-6}\widehat{\operatorname{Var}}(r^{\mathrm{OOF}})+10^{-12}\), using the empirical residual variance with divisor \(n\), to keep the logarithm finite. The multiplier \(c\) makes the average predicted variance equal to the average squared out-of-fold residual.
+
+\subsection{Conditional generative simulator}
+
+\noindent\textbf{Conditional Wasserstein generative adversarial network.}
+
+We use the WGAN with gradient penalty developed by \authorcite{gulrajaniImprovedTrainingWasserstein2017}, following \authorcite{atheyUsingWassersteinGenerative2024} in fitting separate conditional models for the two treatment arms. Separate generators and critics are fitted in the control and treated groups. For treatment arm \(a\), the generator represents the conditional outcome distribution as
+\[
+\widetilde Y
+=
+G_{\theta,a}(Z,X),
+\qquad
+Z\sim\mathcal N(0,I).
+\]
+Each generator takes standardized covariates and a 10-dimensional standard-normal noise vector as inputs and has three hidden layers of 128 units with layer normalization and leaky-ReLU activations. The critic has three hidden layers of 128 units with leaky-ReLU activations and maps an outcome--covariate pair to a scalar score.
+
+For each minibatch, the critic is updated five times to assign higher scores to observed outcomes than to generated outcomes, while the generator is updated to increase its generated outcomes' critic scores. We enforce the critic's Lipschitz constraint with the WGAN gradient penalty. Writing \(Y^G=G_{\theta,a}(Z,X)\), the losses are
+\[
+\begin{aligned}
+\mathcal L_D
+&=
+\mathbb E\!\left[D_{\omega,a}(Y^G,X)\right]
+-\mathbb E\!\left[D_{\omega,a}(Y,X)\right]\\
+&\quad+\lambda\,
+\mathbb E\!\left[\left(\left\lVert\nabla_{\bar Y}D_{\omega,a}(\bar Y,X)\right\rVert_2-1\right)^2\right],\\
+\mathcal L_G
+&=-\mathbb E\!\left[D_{\omega,a}(Y^G,X)\right],
+\end{aligned}
+\]
+where \(\bar Y\) interpolates between observed and generated outcomes and \(\lambda=10\). We train each arm for 5000 epochs with batch size 512, using Adam with \((\beta_1,\beta_2)=(0,0.9)\) and learning rates \(5\times10^{-5}\) for the generator and \(2\times10^{-4}\) for the critic.
+
+Adversarial losses do not provide a conventional convergence criterion. We therefore retain the checkpoint with the smallest average exact one-dimensional Wasserstein-1 distance between observed and generated standardized outcomes, averaged over five draws for each treatment arm. The distance is computed at the first epoch, every 200 epochs, and the final epoch.
+
+After training, synthetic outcomes are generated by drawing new values of \(Z\) while keeping \(X_i^{g,m}\) and \(A_i^{g,m}\) fixed,
+\[
+\widetilde Y_{i,s}^{g,m,k}
+=
+G_{\widehat{\theta},A_i^{g,m}}
+\left(
+Z_i^{(k)},X_i^{g,m}
+\right).
+\]
+Although the WGAN learns the full conditional distribution, its counterfactual means are needed to compute the estimand. We approximate them with \(B=10{,}000\) Monte Carlo draws per treatment and reference covariate vector,
+\[
+\widehat{\mu}_{s,a}^{\,g,m}(X_i^{g,m})
+\approx
+\frac{1}{B}
+\sum_{b=1}^{B}
+G_{\widehat{\theta},a}
+\left(
+Z_i^{(b)},X_i^{g,m}
+\right).
+\]
+
+\clearpage
+\section{Estimators}
+\label{app:estimators}
+
+This appendix complements the simulator description by detailing the causal estimators used in the benchmark comparison. Here \((X_i,A_i,Y_i)\) denotes unit \(i\) in the dataset to which the estimator is applied; generator, reference-dataset, simulator, and draw indices are suppressed. The outcome models that are used by some of the estimators intentionally follow the same conditional-mean specifications as the learners used to construct the simulators, \(\mathcal L=\{\mathrm{OLS2},\mathrm{GB},\mathrm{RF},\mathrm{NN}\}\). See Appendix~\ref{app:simulators} for more details.
+
+\subsection{G-computation estimators}
+
+For each outcome learner \(l\) in \(\mathcal L\), we estimate
+\[
+\widehat{\mu}_{l,a}(x)
+\approx
+\mathbb E[Y\mid A=a,X=x].
+\]
+Throughout the formulas below, \(\widehat\mu_{l,a}(X_i)\) denotes an out-of-fold prediction from a model fitted without the fold containing unit \(i\); fold indices are suppressed.
+The G-computation estimator is
+\[
+\widehat{\Phi}_{l,\mathrm{Gcomp}}
+=
+\frac{1}{n}
+\sum_{i=1}^{n}
+\left\{
+\widehat{\mu}_{l,1}(X_i)
+-
+\widehat{\mu}_{l,0}(X_i)
+\right\}.
+\]
+
+OLS1 is a pooled additive linear regression of the outcome on treatment and covariates; its reported estimate is the treatment coefficient.
+
+\subsection{Inverse probability weighting}
+\label{app:ipw}
+
+We estimate the propensity score, \mbox{\(e(x)=\Pr(A=1\mid X=x)\)}, using a five-fold cross-fitted \texttt{GradientBoostingClassifier} from scikit-learn, following \authorcite{chernozhukovDoubleDebiasedMachine2018}. We denote the fitted score by \(\widehat e(x)\). The classifier sequentially combines shallow trees to predict treatment status by minimizing logistic loss. We use the normalized IPW estimator \cite{luncefordStratificationWeightingPropensity2004},
+\[
+\widehat{\Phi}_{\mathrm{IPW}}
+=
+\frac{
+\sum_{i=1}^{n}
+A_iY_i/\widehat e(X_i)
+}{
+\sum_{i=1}^{n}
+A_i/\widehat e(X_i)
+}
+-
+\frac{
+\sum_{i=1}^{n}
+(1-A_i)Y_i/\{1-\widehat e(X_i)\}
+}{
+\sum_{i=1}^{n}
+(1-A_i)/\{1-\widehat e(X_i)\}
+}.
+\]
+Estimated propensity scores are truncated to \([0.01,0.99]\), corresponding to a trimming threshold of \(\delta=0.01\).
+
+\subsection{Augmented inverse probability weighting}
+
+For each of the outcome learners \(l\) in \(\mathcal L\), and using the same estimated propensity scores as for the IPW estimator, the AIPW estimator \cite{bangDoublyRobustEstimation2005} is
+\[
+\begin{aligned}
+\widehat{\Phi}_{l,\mathrm{AIPW}}
+={}&
+\frac{1}{n}
+\sum_{i=1}^{n}
+\left[
+\widehat{\mu}_{l,1}(X_i)
+-
+\widehat{\mu}_{l,0}(X_i)
+\right.\\
+&\left.
++
+\frac{
+A_i\{Y_i-\widehat{\mu}_{l,1}(X_i)\}
+}{
+\widehat e(X_i)
+}
+-
+\frac{
+(1-A_i)\{Y_i-\widehat{\mu}_{l,0}(X_i)\}
+}{
+1-\widehat e(X_i)
+}
+\right].
+\end{aligned}
+\]
+
+\subsection{Targeted maximum likelihood estimation}
+
+TMLE \cite{vanderlaanTargetedMaximumLikelihood2006} starts from initial estimates \(\widehat{\mu}_{l,0}(X_i)\) and \(\widehat{\mu}_{l,1}(X_i)\), for each \(l\) in \(\mathcal L\), and updates them using the estimated propensity score from the IPW estimator. For the continuous outcome considered here, define the clever covariate
+\[
+H_{\widehat e}(A_i,X_i)
+=
+\frac{A_i}{\widehat e(X_i)}
+-
+\frac{1-A_i}{1-\widehat e(X_i)}.
+\]
+
+The fluctuation parameter is estimated as
+\[
+\widehat{\varepsilon}
+=
+\frac{
+\sum_{i=1}^{n}
+H_{\widehat e}(A_i,X_i)
+\left\{
+Y_i-\widehat{\mu}_{l,A_i}(X_i)
+\right\}
+}{
+\sum_{i=1}^{n}
+H_{\widehat e}(A_i,X_i)^2
+}.
+\]
+The targeted predictions are
+\[
+\begin{aligned}
+\widehat{\mu}^{\star}_{l,1}(X_i)
+&=\widehat{\mu}_{l,1}(X_i)+\frac{\widehat{\varepsilon}}{\widehat e(X_i)},\\
+\widehat{\mu}^{\star}_{l,0}(X_i)
+&=\widehat{\mu}_{l,0}(X_i)-\frac{\widehat{\varepsilon}}{1-\widehat e(X_i)}.
+\end{aligned}
+\]
+The TMLE estimator is then
+\[
+\widehat{\Phi}_{l,\mathrm{TMLE}}
+=
+\frac{1}{n}
+\sum_{i=1}^{n}
+\left\{
+\widehat{\mu}^{\star}_{l,1}(X_i)
+-
+\widehat{\mu}^{\star}_{l,0}(X_i)
+\right\}.
+\]
+
+\subsection{Bayesian causal forest}
+
+Bayesian causal forest (BCF) \cite{hahnBayesianRegressionTree2020} separates the outcome surface into a baseline component and a treatment-effect component:
+\[
+\mathbb E[Y\mid X=x,A=a]
+=
+\mu\{x,\widehat e(x)\}
++
+a\,\tau(x).
+\]
+The fitted propensity score \(\widehat e(x)\) enters the baseline component. For BCF, we fit the gradient-boosting propensity model in sample, trim its predictions to the interval \([0.01,0.99]\), and standardize the outcome before fitting.
+
+The \texttt{stochtree} algorithm represents \(\mu\) and \(\tau\) as separate sums of trees. It first performs 10 grow-from-root iterations, which construct an initial pair of tree ensembles from the data. It then runs an MCMC backfitting procedure. Conditional on the current treatment-effect forest, the baseline forest is updated using the remaining outcome residuals; conditional on the current baseline forest, the treatment-effect forest is updated using the remaining treatment-associated residuals. Thus, the trees in the two ensembles are repeatedly modified while accounting for the other component. After 20 burn-in iterations, we retain 30 posterior draws; posterior-mean potential-outcome predictions average over those draws.
+
+We use 250 trees for the baseline forest and 50 for the treatment-effect forest. The treatment-effect forest has a shallower-tree prior (\(\alpha=0.25,\beta=3\)) than the baseline forest (\(\alpha=0.95,\beta=2\)), which shrinks effect heterogeneity more strongly than baseline outcome variation. We use the homoskedastic version of the model.
+
+For each covariate vector, we obtain posterior-mean predictions under both treatment values, \(\widehat m(x,1)\) and \(\widehat m(x,0)\), and form
+\[
+\widehat\tau(x)=\widehat m(x,1)-\widehat m(x,0).
+\]
+The BCF G-computation estimator averages these predicted effects over the observed covariates:
+\[
+\widehat{\Phi}_{\mathrm{BCF}}
+=
+\frac{1}{n}
+\sum_{i=1}^{n}
+\widehat\tau(X_i).
+\]
+
+\clearpage
+\section{Outcome-distribution distances}
+\label{app:distances}
+
+For each original reference dataset, let \(Y_i^0\) denote the observed outcome for unit \(i\) and \(\widetilde Y_i^{(k)}\) the outcome for that unit in the \(k\)-th dataset generated by simulator \(s\). We calculate each metric from the full samples \(\{Y_i^0\}_{i=1}^n\) and \(\{\widetilde Y_i^{(k)}\}_{i=1}^n\), then average it over the \(K\) Monte Carlo outcome draws:
+\[
+d_\ell^{g,m,s}=\frac{1}{K}\sum_{k=1}^{K}D_\ell\!\left(\{Y_i^0\}_{i=1}^n,\{\widetilde Y_i^{(k)}\}_{i=1}^n\right).
+\]
+We report three distributional distances. Writing \(F\) and \(\widetilde F\) for the two empirical CDFs, and \(Y^0_{(j)}\) and \(\widetilde Y_{(j)}\) for their ordered values, we define the distances as
+\[
+\begin{aligned}
+W_1&=\frac{1}{n}\sum_{j=1}^{n}\left|Y^0_{(j)}-\widetilde Y_{(j)}\right|,\\
+\mathrm{KS}&=\sup_y\left|F(y)-\widetilde F(y)\right|,\\
+\mathrm{Energy}&=\left\{2\int_{-\infty}^{\infty}\left[F(y)-\widetilde F(y)\right]^2\,dy\right\}^{1/2}.
+\end{aligned}
+\]
+These distances compare the full marginal outcome distributions.
+
+Finally, within each reference dataset \(m\) and setting \(g\), we compute the Pearson correlation across the five simulators between \(d_\ell^{g,m,s}\) and their Spearman ranking fidelity \(\rho^{g,m,s}\). We report the mean of these correlations over the 100 reference datasets in each setting. Thus, simulators are compared on the same reference dataset rather than pooled across reference datasets. The alignment-excluded columns use \(\rho_{\mathrm{excl}}^{g,m,s}\), excluding estimators aligned with each simulator.

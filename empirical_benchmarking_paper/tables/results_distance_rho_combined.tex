@@ -1,0 +1,34 @@
+\begin{table*}[!t]
+\centering
+\caption{Mean within-reference-dataset Pearson correlations between outcome-distribution distance and Spearman ranking fidelity. The main panels compare all five simulators; sensitivity panels remove WGAN in ACIC and RF in N\&W, leaving four. Each correlation compares these simulators on the same reference dataset; coefficients are then averaged over the 100 reference datasets. All and Excl. aligned use ranking fidelity before and after excluding estimators aligned with each simulator, respectively. Negative values indicate that simulators with smaller distances tend to have higher ranking fidelity. Bold marks the most negative mean correlation within each setting and estimator panel, including ties based on unrounded means. Superscripts \(\dagger\), \(\ddagger\), and \(\S\) indicate negative correlations in at least 90\%, 95\%, and 99\% of reference datasets, respectively (do not confuse with significance levels). }
+\label{tab:distance-ranking}
+{
+\makebox[\textwidth][c]{\begin{tabular}{lrrrr@{\hspace{\tablegroupsep}}rrrrrrrr@{\hspace{\tablegroupsep}}r}
+\toprule
+& \multicolumn{4}{c}{ACIC 2017} & \multicolumn{8}{c}{N\&W} & Winner count \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-13}\cmidrule(lr){14-14}
+Distance & IID & \shortstack{Non-\\additive} & \shortstack{Group-\\correlated} & \shortstack{Hetero-\\skedastic} & \shortstack{A\\$n=1000$} & \shortstack{A\\$n=4302$} & \shortstack{B\\$n=1000$} & \shortstack{B\\$n=4302$} & \shortstack{C\\$n=1000$} & \shortstack{C\\$n=4302$} & \shortstack{D\\$n=1000$} & \shortstack{D\\$n=4302$} & Total \\
+\midrule
+\multicolumn{14}{l}{\textit{All estimators}} \\
+$W_1$ & -0.049 & -0.402 & -0.119 & -0.071 & 0.029 & \textbf{-0.098} & \textbf{-0.159} & \textbf{-0.392} & \textbf{-0.261} & \textbf{-0.420} & \textbf{-0.344} & \textbf{-0.389} & 7/12 \\
+KS & \textbf{-0.351} & \textbf{-0.539}\textsuperscript{\(\dagger\)} & \textbf{-0.422} & \textbf{-0.377} & 0.015 & 0.116 & -0.009 & -0.041 & -0.027 & -0.042 & -0.192 & -0.146 & 4/12 \\
+Energy & -0.179 & -0.529 & -0.254 & -0.209 & \textbf{0.015} & -0.004 & -0.097 & -0.247 & -0.194 & -0.313 & -0.276 & -0.288 & 1/12 \\
+\addlinespace[\tablepanelgap]
+\multicolumn{14}{l}{\textit{Excl. aligned}} \\
+$W_1$ & -0.329 & -0.569 & -0.413 & -0.365 & \textbf{-0.058} & \textbf{0.001} & \textbf{-0.186} & \textbf{-0.424}\textsuperscript{\(\dagger\)} & \textbf{-0.337} & \textbf{-0.452} & \textbf{-0.383} & \textbf{-0.539} & 8/12 \\
+KS & \textbf{-0.662}\textsuperscript{\(\dagger\)} & \textbf{-0.706}\textsuperscript{\(\dagger\)} & \textbf{-0.736}\textsuperscript{\(\dagger\)} & \textbf{-0.706}\textsuperscript{\(\ddagger\)} & -0.025 & 0.071 & -0.078 & -0.110 & -0.142 & -0.085 & -0.221 & -0.265 & 4/12 \\
+Energy & -0.482 & -0.680 & -0.566\textsuperscript{\(\dagger\)} & -0.527 & -0.046 & 0.034 & -0.142 & -0.300 & -0.287 & -0.351 & -0.316 & -0.451 & 0/12 \\
+\addlinespace[\tablepanelgap]
+\multicolumn{14}{l}{\textit{All estimators; WGAN / RF removed}} \\
+$W_1$ & 0.386 & -0.254 & 0.376 & 0.384 & -0.051 & 0.366 & \textbf{-0.602}\textsuperscript{\(\ddagger\)} & \textbf{-0.488} & \textbf{-0.620}\textsuperscript{\(\dagger\)} & \textbf{-0.475} & \textbf{-0.453} & \textbf{-0.329} & 6/12 \\
+KS & \textbf{0.334} & -0.457\textsuperscript{\(\ddagger\)} & \textbf{0.315} & \textbf{0.322} & \textbf{-0.174} & \textbf{0.253} & -0.455 & -0.220 & -0.392 & -0.136 & -0.303 & -0.192 & 5/12 \\
+Energy & 0.379 & \textbf{-0.585}\textsuperscript{\(\ddagger\)} & 0.366 & 0.372 & -0.115 & 0.325 & -0.540\textsuperscript{\(\dagger\)} & -0.367 & -0.568\textsuperscript{\(\dagger\)} & -0.358 & -0.390 & -0.269 & 1/12 \\
+\addlinespace[\tablepanelgap]
+\multicolumn{14}{l}{\textit{Excl. aligned; WGAN / RF removed}} \\
+$W_1$ & 0.342 & -0.302 & 0.281 & 0.331 & -0.153 & 0.395 & \textbf{-0.679}\textsuperscript{\(\ddagger\)} & \textbf{-0.618}\textsuperscript{\(\ddagger\)} & \textbf{-0.717}\textsuperscript{\(\ddagger\)} & \textbf{-0.530}\textsuperscript{\(\dagger\)} & \textbf{-0.478} & \textbf{-0.522} & 6/12 \\
+KS & \textbf{0.256} & -0.494\textsuperscript{\(\dagger\)} & \textbf{0.177} & \textbf{0.230} & \textbf{-0.198} & \textbf{0.142} & -0.600\textsuperscript{\(\dagger\)} & -0.407 & -0.528 & -0.204 & -0.319 & -0.316 & 5/12 \\
+Energy & 0.323 & \textbf{-0.585}\textsuperscript{\(\ddagger\)} & 0.254 & 0.305 & -0.177 & 0.291 & -0.649\textsuperscript{\(\dagger\)} & -0.529\textsuperscript{\(\dagger\)} & -0.684\textsuperscript{\(\ddagger\)} & -0.419 & -0.414 & -0.457 & 1/12 \\
+\bottomrule
+\end{tabular}}
+}
+\end{table*}

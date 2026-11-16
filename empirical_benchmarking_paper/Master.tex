@@ -1,0 +1,87 @@
+% Neutral two-column preprint; no publisher template files are required.
+\documentclass[10pt,a4paper,twocolumn]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{stix2}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[a4paper,top=20mm,bottom=21mm,left=16mm,right=16mm,columnsep=6mm]{geometry}
+\usepackage{graphicx,booktabs,array,multirow,tabularx,longtable}
+\usepackage{etoolbox,placeins,pdflscape,dblfloatfix}
+\usepackage{tikz,colortbl}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,decorations.pathreplacing}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{textcomp,xurl}
+\usepackage[font=small,labelfont=bf,labelsep=period]{caption}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue,
+  pdftitle={Formalizing and Evaluating Rank Preservation in Empirical Monte Carlo Studies of Causal Estimators},
+  pdfauthor={Carlos Ameal, Tom Loeys, Jan De Neve}}
+\graphicspath{{figures/}}
+\raggedbottom
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{1em}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.65em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.65em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{0.65em}{}
+\titlespacing*{\section}{0pt}{2.2ex plus .5ex}{1ex}
+\titlespacing*{\subsection}{0pt}{1.7ex plus .4ex}{.7ex}
+\newlength{\tablegroupsep}
+\setlength{\tablegroupsep}{8pt}
+\newlength{\tablepanelgap}
+\setlength{\tablepanelgap}{4pt}
+\newcommand{\papertablestyle}{\fontsize{8}{10}\selectfont\setlength{\tabcolsep}{2pt}\renewcommand{\arraystretch}{1.05}}
+\newcommand{\tablebox}[1]{\makebox[\linewidth][c]{#1}}
+\AtBeginEnvironment{tabular}{\papertablestyle}
+\AtBeginEnvironment{tabular*}{\papertablestyle}
+\AtBeginEnvironment{longtable}{\papertablestyle\setlength{\LTcapwidth}{\linewidth}}
+\newcommand{\supercite}[1]{\citep{#1}}
+\newcommand{\authorcite}[1]{\citet{#1}}
+\renewcommand{\figurename}{Figure}
+\renewcommand{\tablename}{Table}
+\begin{document}
+\def\neutralpreprint{1}
+\twocolumn[{
+\begin{center}
+{\LARGE\bfseries Formalizing and Evaluating Rank Preservation in Empirical Monte Carlo Studies of Causal Estimators\par}
+\vspace{1em}
+{\large Carlos Ameal\quad Tom Loeys\quad Jan De Neve\par}
+\vspace{.5em}
+{Ghent University\par}
+\vspace{.3em}
+{\small\href{mailto:carlos.rodriguezameal@ugent.be}{carlos.rodriguezameal@ugent.be}\par}
+\end{center}
+\vspace{.7em}
+\begin{center}\textbf{Abstract}\end{center}
+\begin{minipage}{\textwidth}
+\small\input{0_abstract}\par
+\vspace{.6em}
+\noindent\textbf{Keywords:} causal inference; empirical Monte Carlo studies; plasmode; simulation; estimator selection; benchmarking.
+\end{minipage}
+\vspace{1.6em}
+}]
+\input{1_introduction}
+\input{2_framework}
+\input{3_simulation_design}
+\input{4_benchmarking_procedure}
+\input{5_results}
+\input{6_discussion}
+\section*{Code and Data Availability}
+\label{sec:code-data-availability}
+The simulation code and numerical results needed to reproduce the tables and figures are available at \url{https://github.com/carlosrameal/emcs-rank-preservation}.
+\bibliographystyle{paper-references}
+\bibliography{references}
+\clearpage
+\onecolumn
+% Geometry changes in the appendix must retain its single-column layout.
+\let\preprintnewgeometry\newgeometry
+\renewcommand{\newgeometry}[1]{\preprintnewgeometry{#1}\onecolumn}
+\appendix
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\renewcommand{\thefigure}{A\arabic{figure}}
+\renewcommand{\thetable}{A\arabic{table}}
+\input{7_appendix}
+\end{document}

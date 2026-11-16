@@ -1,0 +1,72 @@
+% !TeX root = Master.tex
+\section{Simulation design}
+\label{sec:simulation-design}
+
+To illustrate the framework and gain evidence on the empirical performance of EMCS in controlled scenarios, we conduct a simulation study with particular attention to the model-alignment concern raised in Section~\ref{sec:framework}. We use two established collections of benchmark designs: the 2017 Atlantic Causal Inference Conference (ACIC) designs presented by \authorcite{hahnAtlanticCausalInference2019}, which use covariates from the Infant Health and Development Program, and the fully synthetic, nonlinear designs of \authorcite{nieQuasioracleEstimationHeterogeneous2021} (N\&W).
+
+We consider 12 settings: four error structures for ACIC 2017 and four DGPs (A--D) for N\&W, each at two sample sizes. We index these settings, including sample size, by \(g\in\mathcal G\). Each design defines a reference-dataset law \(\mathbb G_n^{g}\), which we call its \emph{generator}. Throughout the paper, we use \emph{generator} to refer to \(\mathbb G_n^{g}\) and, by extension, sometimes to the full design \(g\). For each \(g\), we draw from this law to generate \(M=100\) reference datasets that play the role of \(\mathcal D_0\) in Equation~\eqref{eq:observed-data-causal-law}:
+\[
+\mathcal D^{g,m}=\{(X_i^{g,m},A_i^{g,m},Y_i^{g,m})\}_{i=1}^n
+\sim\mathbb G_n^{g},
+\qquad m=1,\dots,M.
+\]
+
+Our objective is to mimic an applied case study in which, given a reference dataset \(\mathcal D^{g,m}\), a researcher sets up an EMCS to rank a collection of causal estimators \(\mathcal E\) targeting the SACTE. We choose a redrawing scheme that conditions on the reference covariates and treatment, so variability comes only from redrawing outcomes. We fit conditional outcome simulators, indexed by \(s\in\mathcal S\), to each reference dataset.
+
+Because the true outcome-generating mechanism is known, the target benchmark \((\mathbb P_{0,n}^{g,m},\Phi_0^{g,m})\) serves as an oracle for evaluating the fitted-simulator benchmarks under the same redrawing scheme. The following subsections describe the generators, simulators, and causal estimators; Section~\ref{sec:benchmarking-procedure} details the benchmark construction and study workflow.
+
+\subsection{The generators}
+\label{sec:generators}
+
+To define the dataset laws \(\mathbb G_n^{g}\) used to generate the reference datasets, we follow the ACIC 2017 and N\&W designs. The ACIC 2017 designs \cite{hahnAtlanticCausalInference2019} reuse covariates from the Infant Health and Development Program (IHDP) and impose synthetic treatment and outcome mechanisms on that empirical covariate distribution. The ACIC designs fix the observed covariates and generate new datasets by drawing treatments and outcomes conditional on these fixed covariates according to the design's propensity-score and outcome models. We focus on settings with strong effects and high confounding and on the four error structures: additive homoskedastic iid, non-additive, group-correlated, and heteroskedastic. This allows us to assess how different error structures affect the ability of EMCS benchmarks to preserve estimator performance and rankings.
+
+Although ACIC 2017 does not specify a population model for the covariates, its outcome mechanism suffices to compute the SACTE in Equation~\eqref{eq:sacte} over the fixed reference covariates. Together with its treatment mechanism and the fixed covariates, it also determines the reference-dataset law \(\mathbb G_n^{g}\).
+
+By contrast, the N\&W designs \cite{nieQuasioracleEstimationHeterogeneous2021}
+are fully synthetic: covariates, treatments, and outcomes are generated from nonlinear specifications. We use the four DGPs (A--D) proposed there with covariate dimension $d=6$. We run the N\&W DGPs at one of the original sample sizes from the paper, $n=1000$, and additionally at $n=4302$ to match the ACIC 2017 sample size; this lets us compare design families directly and assess the effect of sample size on simulator fidelity.
+
+Thus, \(\Phi_0^{g,m}\) is constant across reference datasets \(m\) for ACIC 2017, where covariates are fixed, but can vary across reference datasets for the N\&W designs, where covariates are redrawn. In N\&W design C, however, the constant conditional treatment effect makes the SACTE constant as well.
+
+Appendix~\ref{app:generators} shows the implemented ACIC and N\&W specifications.
+
+\subsection{The simulators}
+
+The simulators we study can be classified into two broad classes. Both define stochastic conditional outcome distributions.
+
+\noindent\textbf{Conditional-mean simulators:}
+These simulators estimate a conditional mean function,
+\[
+\widehat\mu_s(x,a)
+\approx
+\mathbb E[Y\mid X=x,A=a],
+\]
+and treatment-specific heteroskedastic standard-deviation functions \(\widehat\sigma_{s,a}(x)\). For simulator \(s\), the \(k\)-th synthetic outcome is generated as
+\[
+\begin{aligned}
+\widetilde Y_{i,s}^{g,m,k}
+&= A_i^{g,m}\left\{\widehat\mu_{s,1}^{g,m}(X_i^{g,m})
++ \widehat\sigma_{s,1}^{g,m}(X_i^{g,m})\varepsilon_{i1}^{(k)}\right\} \\[-2pt]
+&+ \bigl(1-A_i^{g,m}\bigr)\left\{\widehat\mu_{s,0}^{g,m}(X_i^{g,m})
++ \widehat\sigma_{s,0}^{g,m}(X_i^{g,m})\varepsilon_{i0}^{(k)}\right\}.
+\end{aligned}
+\]
+Here, \(\varepsilon_{ia}^{(k)}\overset{\mathrm{iid}}{\sim}\mathcal N(0,1)\) for \(a\in\{0,1\}\).
+Thus, the observed treatment selects the fitted conditional mean and corresponding heteroskedastic noise scale. The simulator comprises these fitted functions and the Gaussian error distribution; labels such as GB or RF identify the learner family used to construct it. To estimate \(\widehat\mu_s\) and \(\widehat\sigma_s\), we employ OLS with squared terms and pairwise interactions between variables (OLS2), gradient boosting (GB), random forest (RF), and neural-network (NN) models.
+
+\noindent\textbf{Generative simulators:}
+This type of simulator aims to approximate the full conditional distribution directly, drawing independently across units: \(\widetilde Y_{i,s}^{g,m,k}\sim\widehat P_s(\cdot\mid X_i^{g,m},A_i^{g,m})\). We include a conditional Wasserstein generative adversarial network (WGAN) with gradient penalty, as introduced by \authorcite{gulrajaniImprovedTrainingWasserstein2017}. We follow the approach of \authorcite{atheyUsingWassersteinGenerative2024} and use a very similar architecture, but while they fit two models, one to generate \(X_i\) conditional on \(A_i\) and another to generate outcomes conditional on \(X_i,A_i\), we only evaluate the latter. Still, our results are informative for broader designs that generate covariates and treatment, since these designs must also reproduce the conditional outcome distribution. Failure at this stage would compromise the resulting simulation study.
+
+The fitted WGAN defines a conditional outcome distribution implicitly, without an explicit conditional mean function. At each fixed reference covariate vector, we approximate its treatment-specific conditional means by averaging 10,000 generated outcomes under each treatment. Averaging the resulting mean contrasts over the reference covariates gives a Monte Carlo approximation to its induced SACTE in Equation~\eqref{eq:simulator-induced-estimand}.
+
+Additional implementation details for the simulator models are provided in Appendix~\ref{app:simulators}.
+
+\subsection{Causal estimators}
+
+We compare a set of estimators \(\mathcal E\) that are commonly used in the causal-inference literature and that involve fitting outcome and/or propensity score models. Although these methods are often used as ATE estimators, the same point-estimation formulas apply to the SACTE. \authorcite{imbensNonparametricEstimationAverage2004} shows that efficient estimators of the population average treatment effect can also be interpreted as estimators of the corresponding sample average treatment effect, with the same point estimator but a smaller asymptotic variance when inference is conditional on the realized sample. The choice of the SACTE therefore determines the benchmark value against which bias and MSE are computed. The construction of the point estimates is unchanged, but if we were estimating standard errors or coverage, we would need variance estimators appropriate for inference conditional on the realized covariates.
+
+For outcome regression, we use ordinary least squares with squared terms and pairwise interactions between variables (OLS2), gradient boosting (GB), random forests (RF), and neural networks (NN), with the same conditional-mean specifications as the corresponding simulators to induce model alignment. Following \authorcite{chernozhukovDoubleDebiasedMachine2018}, these outcome models are fitted using five-fold cross-fitting, which constitutes a difference in fitting procedure relative to their simulator counterparts. For propensity score estimation, we use a gradient-boosting classifier, also fitted using five-fold cross-fitting, selected after comparing several classifiers. The GB, RF, and NN outcome models and the GB classifier are implemented in \texttt{scikit-learn}.
+
+We use these models in G-computation (G-comp), normalized inverse probability weighting (IPW) \cite{luncefordStratificationWeightingPropensity2004}, augmented inverse probability weighting (AIPW) \cite{bangDoublyRobustEstimation2005}, and targeted maximum likelihood estimation (TMLE) \cite{vanderlaanTargetedMaximumLikelihood2006}. G-comp labels identify the outcome model, while the AIPW and TMLE labels give the propensity model followed by the outcome model; for example, GB--RF AIPW uses GB propensity scores and RF outcome regression. GB IPW uses only the GB propensity model. We also include Bayesian causal forest (BCF G-comp) \cite{hahnBayesianRegressionTree2020}, implemented in \texttt{stochtree}, and linear regression with additive effects (OLS1). We count OLS1 as aligned with OLS2 because of their similar specifications. Table~\ref{tab:estimators} summarizes the estimators, labels, nuisance models, and aligned simulators. Appendix~\ref{app:estimators} provides the estimator formulas and implementation details, including the in-sample propensity fit used by BCF.
+
+\input{tables/estimators}
+

@@ -23,6 +23,9 @@ It does not fit simulation models. No original run archives are required.
 
 ## Compile the manuscript
 
+The package includes a neutral two-column preprint, using the standard LaTeX
+`article` class. No Wiley template files or publisher logos are required.
+
 After regeneration, change to `paper/empirical_benchmarking_paper` and run:
 
 ```
@@ -33,7 +36,13 @@ pdflatex Master.tex
 ```
 
 An installed LaTeX distribution with the packages requested by Master.tex is
-required. The supplied Wiley template is used by the manuscript.
+required. The supplied PDF is the neutral preprint version of the manuscript.
+
+## Licence scope
+
+The repository's MIT licence applies to our original simulation and analysis
+software. It does not license the manuscript text, figures, numerical datasets,
+or third-party materials. Any separately stated terms for those materials apply.
 
 ## Simulation code
 
@@ -45,6 +54,6 @@ for rebuilding tables and figures. See `SIMULATIONS.md` for commands.
 
 This is a LOCAL DRAFT, not a published or fully documented simulation release.
 Before publication: document acquisition/preparation of the ACIC covariates;
-check third-party licensing and template redistribution; select a code licence;
+check third-party licensing and finalize the data licence;
 and verify the full experiment environment. Re-running model fitting need not
 reproduce floating-point results bit for bit across platforms.
