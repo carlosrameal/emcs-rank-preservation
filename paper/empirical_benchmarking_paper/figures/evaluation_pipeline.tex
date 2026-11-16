@@ -1,0 +1,96 @@
+\begin{figure*}[!t]
+\centering
+\makebox[\textwidth][c]{%
+\pgfdeclarelayer{evaluationcontinuations}
+\pgfsetlayers{evaluationcontinuations,main}
+\begin{tikzpicture}[
+    x=0.82cm, y=0.68cm,
+    every node/.style={font=\fontsize{7pt}{9pt}\selectfont},
+    box/.style={
+        draw,
+        rounded corners,
+        align=center,
+        minimum width=4.9cm,
+        minimum height=0.75cm,
+        inner sep=2.5pt,
+        text width=4.8cm
+    },
+    widebox/.style={box, minimum width=4.9cm},
+    rankbox/.style={box, minimum width=4.9cm, minimum height=0.95cm},
+    level2box/.style={box, minimum width=4.9cm, minimum height=0.95cm},
+    kbox/.style={box, minimum width=4.9cm, minimum height=0.85cm},
+    lvl/.style={align=right, text width=3.5cm, anchor=east, font=\fontsize{8pt}{10pt}\selectfont\bfseries, execute at begin node={\hyphenpenalty=10000\relax}},
+    arr/.style={-{Stealth[length=1.3mm]}, semithick},
+    continuation/.style={{Stealth[length=1.3mm]}-, draw=black, densely dotted, semithick}
+]
+
+% Estimation errors across Monte Carlo replicates
+\node[kbox] (errkm1) at (-4.3,-7.6) {$\mathrm{Err}_{e_j}^{\,g,m,s,k-1}$};
+\node[kbox] (errk)   at ( 2.0,-7.6) {$\mathrm{Err}_{e_j}^{\,g,m,s,k}$};
+\node[kbox] (errkp1) at ( 8.3,-7.6) {$\mathrm{Err}_{e_j}^{\,g,m,s,k+1}$};
+
+% Level 4: estimator performance within a simulator
+\node[widebox, anchor=south] (metrics1) at ([xshift=-5.166cm,yshift=0.5cm]errk.north) {$\begin{gathered}\widehat{\mathrm{Bias}}^{g,m,s}(e_{j-1}),\quad\widehat{\mathrm{SD}}^{g,m,s}(e_{j-1})\\[-2pt]\widehat{\mathrm{MSE}}^{g,m,s}(e_{j-1})\end{gathered}$};
+\node[widebox, anchor=south] (metrics) at ([xshift=0cm,yshift=0.5cm]errk.north) {$\begin{gathered}\widehat{\mathrm{Bias}}^{g,m,s}(e_j),\quad\widehat{\mathrm{SD}}^{g,m,s}(e_j)\\[-2pt]\widehat{\mathrm{MSE}}^{g,m,s}(e_j)\end{gathered}$};
+\node[widebox, anchor=south] (metrics3) at ([xshift=5.166cm,yshift=0.5cm]errk.north) {$\begin{gathered}\widehat{\mathrm{Bias}}^{g,m,s}(e_{j+1}),\quad\widehat{\mathrm{SD}}^{g,m,s}(e_{j+1})\\[-2pt]\widehat{\mathrm{MSE}}^{g,m,s}(e_{j+1})\end{gathered}$};
+
+\draw[arr] (errkm1) -- (metrics);
+\draw[arr] (errk) -- (metrics);
+\draw[arr] (errkp1) -- (metrics);
+
+% Level 3: estimator rankings under each simulator
+\node[widebox, anchor=south] (ranksim1) at ([xshift=-5.166cm,yshift=0.5cm]metrics.north) {$\widehat R_{\mathrm{MSE}}^{\,g,m,s-1}$};
+\node[widebox, anchor=south] (ranksim) at ([xshift=0cm,yshift=0.5cm]metrics.north) {$\widehat R_{\mathrm{MSE}}^{\,g,m,s}$};
+\node[widebox, anchor=south] (ranksim3) at ([xshift=5.166cm,yshift=0.5cm]metrics.north) {$\widehat R_{\mathrm{MSE}}^{\,g,m,s+1}$};
+
+\draw[arr] (metrics1) -- (ranksim);
+\draw[arr] (metrics) -- (ranksim);
+\draw[arr] (metrics3) -- (ranksim);
+
+% Level 2: ranking fidelity, promotion, and regret within each reference dataset
+\node[level2box, anchor=south] (dataset1) at ([xshift=-5.166cm,yshift=0.5cm]ranksim.north) {$\begin{gathered}\bigl(\rho^{g,m-1,s}\bigr)_s,\;\bigl(\rho_{\mathrm{excl}}^{g,m-1,s}\bigr)_s,\;\bigl(\Delta\Phi_s^{g,m-1}\bigr)_s\\[-2pt]\bigl(\boldsymbol{\mathrm{Prom}}^{g,m-1,s}\bigr)_{s},\;\bigl(\boldsymbol{\mathrm{Reg}}^{g,m-1,s}\bigr)_{s},\;\bigl(\boldsymbol d^{g,m-1,s}\bigr)_{s}\end{gathered}$};
+\node[level2box, anchor=south] (dataset2) at ([xshift=0cm,yshift=0.5cm]ranksim.north) {$\begin{gathered}\bigl(\rho^{g,m,s}\bigr)_s,\;\bigl(\rho_{\mathrm{excl}}^{g,m,s}\bigr)_s,\;\bigl(\Delta\Phi_s^{g,m}\bigr)_s\\[-2pt]\bigl(\boldsymbol{\mathrm{Prom}}^{g,m,s}\bigr)_{s},\;\bigl(\boldsymbol{\mathrm{Reg}}^{g,m,s}\bigr)_{s},\;\bigl(\boldsymbol d^{g,m,s}\bigr)_{s}\end{gathered}$};
+\node[level2box, anchor=south] (dataset3) at ([xshift=5.166cm,yshift=0.5cm]ranksim.north) {$\begin{gathered}\bigl(\rho^{g,m+1,s}\bigr)_s,\;\bigl(\rho_{\mathrm{excl}}^{g,m+1,s}\bigr)_s,\;\bigl(\Delta\Phi_s^{g,m+1}\bigr)_s\\[-2pt]\bigl(\boldsymbol{\mathrm{Prom}}^{g,m+1,s}\bigr)_{s},\;\bigl(\boldsymbol{\mathrm{Reg}}^{g,m+1,s}\bigr)_{s},\;\bigl(\boldsymbol d^{g,m+1,s}\bigr)_{s}\end{gathered}$};
+
+\draw[arr] (ranksim1) -- (dataset2);
+\draw[arr] (ranksim) -- (dataset2);
+\draw[arr] (ranksim3) -- (dataset2);
+
+% Level 1: average comparison metrics across reference datasets within each design
+\node[rankbox, anchor=south] (average1) at ([xshift=-5.166cm,yshift=0.5cm]dataset2.north) {$\begin{gathered}\bigl(\bar\rho^{g-1,s}\bigr)_s,\;\bigl(\bar\rho_{\mathrm{excl}}^{g-1,s}\bigr)_s,\;\bigl(\overline{|\Delta\Phi_s|}^{g-1}\bigr)_s\\[-2pt]\bigl(\overline{\boldsymbol{\mathrm{Prom}}}^{g-1,s}\bigr)_{s},\;\bigl(\overline{\boldsymbol{\mathrm{Reg}}}^{g-1,s}\bigr)_{s},\;\bigl(\overline{\boldsymbol d}^{g-1,s}\bigr)_{s}\end{gathered}$};
+\node[rankbox, anchor=south] (average) at ([xshift=0cm,yshift=0.5cm]dataset2.north) {$\begin{gathered}\bigl(\bar\rho^{g,s}\bigr)_s,\;\bigl(\bar\rho_{\mathrm{excl}}^{g,s}\bigr)_s,\;\bigl(\overline{|\Delta\Phi_s|}^{g}\bigr)_s\\[-2pt]\bigl(\overline{\boldsymbol{\mathrm{Prom}}}^{g,s}\bigr)_{s},\;\bigl(\overline{\boldsymbol{\mathrm{Reg}}}^{g,s}\bigr)_{s},\;\bigl(\overline{\boldsymbol d}^{g,s}\bigr)_{s}\end{gathered}$};
+\node[rankbox, anchor=south] (average3) at ([xshift=5.166cm,yshift=0.5cm]dataset2.north) {$\begin{gathered}\bigl(\bar\rho^{g+1,s}\bigr)_s,\;\bigl(\bar\rho_{\mathrm{excl}}^{g+1,s}\bigr)_s,\;\bigl(\overline{|\Delta\Phi_s|}^{g+1}\bigr)_s\\[-2pt]\bigl(\overline{\boldsymbol{\mathrm{Prom}}}^{g+1,s}\bigr)_{s},\;\bigl(\overline{\boldsymbol{\mathrm{Reg}}}^{g+1,s}\bigr)_{s},\;\bigl(\overline{\boldsymbol d}^{g+1,s}\bigr)_{s}\end{gathered}$};
+
+\draw[arr] (dataset1) -- (average);
+\draw[arr] (dataset2) -- (average);
+\draw[arr] (dataset3) -- (average);
+
+% Level 0: study conclusions
+\node[widebox, anchor=south] (conclusions) at ([xshift=0cm,yshift=0.5cm]average.north) {Conclusions};
+\draw[arr] (average1) -- (conclusions);
+\draw[arr] (average) -- (conclusions);
+\draw[arr] (average3) -- (conclusions);
+
+\coordinate (labelaxis) at (-7.7,0);
+% Level labels
+\node[lvl] at (conclusions.center -| labelaxis) {Level 0. Draw general conclusions:};
+\node[lvl] at (average.center -| labelaxis) {Level 1. Average comparison metrics:};
+\node[lvl] at (dataset2.center -| labelaxis) {Level 2. Compare rankings with target:};
+\node[lvl] at (ranksim.center -| labelaxis) {Level 3. Rank estimators by MSE:};
+\node[lvl] at (metrics.center -| labelaxis) {Level 4. Summarize estimator performance:};
+\node[lvl] at (errk.center -| labelaxis) {Level 5. Compute estimation errors:};
+
+% Omitted inputs converge into the side boxes, behind the selected path.
+\begin{pgfonlayer}{evaluationcontinuations}
+\foreach \branch in {metrics1,metrics3,ranksim1,ranksim3,dataset1,dataset3,average1,average3} {
+    \draw[continuation] ([xshift=1cm]\branch.south west) -- ++(-1.45,-0.30);
+    \draw[continuation] (\branch.south) -- ++(0,-0.30);
+    \draw[continuation] ([xshift=-1cm]\branch.south east) -- ++(1.45,-0.30);
+}
+\end{pgfonlayer}
+
+\end{tikzpicture}
+}
+\caption{Evaluation pipeline. Dotted arrows indicate omitted inputs to the side branches. Collection indices range over \(s\in\mathcal S\) and \(e\in\mathcal E\). Fitted-simulator rankings are compared with the target ranking (index \(0\)).}
+\label{fig:evaluation_pipeline}
+\end{figure*}

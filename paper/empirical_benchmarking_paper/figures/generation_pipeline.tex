@@ -1,0 +1,113 @@
+\begin{figure*}[!t]
+\centering
+\makebox[\textwidth][c]{%
+\pgfdeclarelayer{continuations}
+\pgfsetlayers{continuations,main}
+\begin{tikzpicture}[
+    x=0.82cm, y=0.68cm,
+    every node/.style={font=\fontsize{7pt}{9pt}\selectfont},
+    box/.style={
+        draw,
+        rounded corners,
+        align=center,
+        minimum width=4.9cm,
+        minimum height=0.75cm,
+        inner sep=2.5pt,
+        text width=4.8cm
+    },
+    widebox/.style={box, minimum width=4.9cm, text width=4.8cm},
+    colbox/.style={box, minimum width=4.9cm, text width=4.8cm},
+    simbox/.style={box, minimum width=4.9cm, text width=4.8cm, minimum height=1.15cm},
+    obsbox/.style={box, minimum width=4.9cm, text width=4.8cm, inner sep=2pt},
+    lvl/.style={
+        align=right, text width=3cm, anchor=east,
+        font=\fontsize{8pt}{10pt}\selectfont\bfseries, execute at begin node={\hyphenpenalty=10000\relax}
+    },
+    arr/.style={-{Stealth[length=1.3mm]}, semithick},
+    continuation/.style={-{Stealth[length=1.3mm]}, draw=black, densely dotted, semithick}
+]
+
+% Study design
+\node[widebox] (design) at (2,0) {Study design\\ \(\mathcal G,\mathcal S,\mathcal E\)};
+
+% Original dataset laws
+\node[colbox, anchor=north] (law1) at ([xshift=-5.166cm,yshift=-0.5cm]design.south) {\(\mathbb G_n^{g-1}\)};
+\node[colbox, anchor=north] (law2) at ([xshift=0cm,yshift=-0.5cm]design.south) {\(\mathbb G_n^{g}\)};
+\node[colbox, anchor=north] (law3) at ([xshift=5.166cm,yshift=-0.5cm]design.south) {\(\mathbb G_n^{g+1}\)};
+
+\draw[arr] ([xshift=1.0cm]design.south west) -- (law1.north);
+\draw[arr] (design) -- (law2.north);
+\draw[arr] ([xshift=-1.0cm]design.south east) -- (law3.north);
+
+% Reference datasets
+\node[obsbox, anchor=north] (obs1) at ([xshift=-5.166cm,yshift=-0.5cm]law2.south) {\(\mathcal D^{g,m-1}\)};
+\node[obsbox, anchor=north] (obs2) at ([xshift=0cm,yshift=-0.5cm]law2.south) {\(\mathcal D^{g,m}\)};
+\node[obsbox, anchor=north] (obs3) at ([xshift=5.166cm,yshift=-0.5cm]law2.south) {\(\mathcal D^{g,m+1}\)};
+
+\draw[arr] ([xshift=1.0cm]law2.south west) -- (obs1.north);
+\draw[arr] (law2) -- (obs2.north);
+\draw[arr] ([xshift=-1.0cm]law2.south east) -- (obs3.north);
+
+% Simulator-induced benchmark objects
+\node[simbox, anchor=north] (sim1) at ([xshift=-5.166cm,yshift=-0.5cm]obs2.south) {
+    \(\widehat P_{s-1}^{\,g,m}(\cdot\mid X,A)\)\\[-1pt]
+    \(\downarrow\)\\[-1pt]
+    \(\bigl(\mathbb P_{s-1,n}^{g,m},\Phi_{s-1}^{g,m}\bigr)\)
+};
+\node[simbox, anchor=north] (sim2) at ([xshift=0cm,yshift=-0.5cm]obs2.south) {
+    \(\widehat P_s^{\,g,m}(\cdot\mid X,A)\)\\[-1pt]
+    \(\downarrow\)\\[-1pt]
+    \(\bigl(\mathbb P_{s,n}^{g,m},\Phi_s^{g,m}\bigr)\)
+};
+\node[simbox, anchor=north] (sim3) at ([xshift=5.166cm,yshift=-0.5cm]obs2.south) {
+    \(\widehat P_{s+1}^{\,g,m}(\cdot\mid X,A)\)\\[-1pt]
+    \(\downarrow\)\\[-1pt]
+    \(\bigl(\mathbb P_{s+1,n}^{g,m},\Phi_{s+1}^{g,m}\bigr)\)
+};
+
+\draw[arr] ([xshift=1.0cm]obs2.south west) -- (sim1.north);
+\draw[arr] (obs2) -- (sim2.north);
+\draw[arr] ([xshift=-1.0cm]obs2.south east) -- (sim3.north);
+
+% Synthetic datasets
+\node[colbox, anchor=north] (syn1) at ([xshift=-5.166cm,yshift=-0.5cm]sim2.south) {\(\widetilde{\mathcal D}_{s,n}^{g,m,k-1}\)};
+\node[colbox, anchor=north] (syn2) at ([xshift=0cm,yshift=-0.5cm]sim2.south) {\(\widetilde{\mathcal D}_{s,n}^{g,m,k}\)};
+\node[colbox, anchor=north] (syn3) at ([xshift=5.166cm,yshift=-0.5cm]sim2.south) {\(\widetilde{\mathcal D}_{s,n}^{g,m,k+1}\)};
+
+\draw[arr] ([xshift=1.0cm]sim2.south west) -- (syn1.north);
+\draw[arr] (sim2) -- (syn2.north);
+\draw[arr] ([xshift=-1.0cm]sim2.south east) -- (syn3.north);
+
+% Estimators / Phi estimates
+\node[colbox, anchor=north] (est1) at ([xshift=-5.166cm,yshift=-0.5cm]syn2.south) {\(\widehat\Phi_{e_{j-1}}^{\,g,m,s,k}\)};
+\node[colbox, anchor=north] (est2) at ([xshift=0cm,yshift=-0.5cm]syn2.south) {\(\widehat\Phi_{e_j}^{\,g,m,s,k}\)};
+\node[colbox, anchor=north] (est3) at ([xshift=5.166cm,yshift=-0.5cm]syn2.south) {\(\widehat\Phi_{e_{j+1}}^{\,g,m,s,k}\)};
+
+\draw[arr] ([xshift=1.0cm]syn2.south west) -- (est1.north);
+\draw[arr] (syn2) -- (est2.north);
+\draw[arr] ([xshift=-1.0cm]syn2.south east) -- (est3.north);
+
+\coordinate (labelaxis) at (-7.7,0);
+% Level labels
+\node[lvl] at (design.center -| labelaxis) {Level 0. Choose study components:};
+\node[lvl] at (law2.center -| labelaxis) {Level 1. Select a generator:};
+\node[lvl] at (obs2.center -| labelaxis) {Level 2. Generate reference datasets:};
+\node[lvl] at (sim2.center -| labelaxis) {Level 3. Construct benchmarks:};
+\node[lvl] at (syn2.center -| labelaxis) {Level 4. Generate Monte Carlo datasets:};
+\node[lvl] at (est2.center -| labelaxis) {Level 5. Apply causal estimators:};
+
+% Background fans suggest the omitted descendants of each side branch.
+% Their endpoints remain in the gap between levels, without reaching a box.
+\begin{pgfonlayer}{continuations}
+\foreach \branch in {law1,law3,obs1,obs3,sim1,sim3,syn1,syn3} {
+    \draw[continuation] ([xshift=1cm]\branch.south west) -- ++(-1.45,-0.30);
+    \draw[continuation] (\branch.south) -- ++(0,-0.30);
+        \draw[continuation] ([xshift=-1cm]\branch.south east) -- ++(1.45,-0.30);
+}
+\end{pgfonlayer}
+
+\end{tikzpicture}
+}
+\caption{Generation pipeline. Dotted arrows indicate continuation of the side branches through omitted repetitions. The same redrawing and estimation steps are applied to the target benchmark \((\mathbb P_{0,n}^{g,m},\Phi_0^{g,m})\), using the true conditional outcome mechanism.}
+\label{fig:generation_pipeline}
+\end{figure*}

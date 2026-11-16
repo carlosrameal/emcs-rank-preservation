@@ -1,0 +1,79 @@
+% Use the numbered reference format supplied for Statistics in Medicine.
+\let\wileybibliographystyle\bibliographystyle
+\renewcommand{\bibliographystyle}[1]{\wileybibliographystyle{paper-references}}
+\documentclass[ASNA,twocolumn]{USG}
+\let\bibliographystyle\wileybibliographystyle
+
+\usepackage{placeins}
+\usepackage{longtable}
+\usepackage{pdflscape}
+\usepackage{tikz}
+\usepackage{colortbl}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,decorations.pathreplacing}
+\graphicspath{{figures/}{images/}}
+\usepackage{xurl}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+% Keep normal vertical spacing instead of stretching gaps to align column bottoms.
+\raggedbottom
+
+% Shared table formatting (also used by generated appendix tables).
+\newlength{\tablegroupsep}
+\setlength{\tablegroupsep}{8pt}
+\newlength{\tablepanelgap}
+\setlength{\tablepanelgap}{4pt}
+\newcommand{\papertablestyle}{%
+    \fontsize{8}{10}\selectfont
+    \setlength{\tabcolsep}{2pt}%
+    \renewcommand{\arraystretch}{1.05}%
+}
+\newcommand{\tablebox}[1]{\makebox[\linewidth][c]{#1}}
+\AtBeginEnvironment{tabular}{\papertablestyle}
+\AtBeginEnvironment{tabular*}{\papertablestyle}
+\AtBeginEnvironment{longtable}{\papertablestyle\setlength{\LTcapwidth}{\linewidth}}
+
+\newcommand{\supercite}[1]{\citep{#1}}
+\newcommand{\authorcite}[1]{\citet{#1}}
+
+\articletype{ORIGINAL ARTICLE}
+\articledoi{}
+\makeatletter
+\historydates{}
+% Show only the rule and page number until publication metadata are assigned.
+\def\oddfoot@titlepage@info{%
+  \vbox{\hsize\textwidth
+    \hrule height .5pt
+    \vskip4pt
+    \hbox to \textwidth{\hfill{\pagenumfont\thepage\ of \@LastPg}}%
+    \vskip10pt
+  }%
+}
+% Omit the empty journal/year imprint (and its comma) on even-page footers.
+\def\evenhead@headings@info{\head@headings@def{\evenpage@headings@def\hfill}}
+\makeatother
+\title{Formalizing and Evaluating Rank Preservation in Empirical Monte Carlo Studies of Causal Estimators}
+\titlemark{RANK PRESERVATION IN EMPIRICAL MONTE CARLO STUDIES}
+\author{Carlos Ameal}
+\author{Tom Loeys}
+\author{Jan De Neve}
+\authormark{AMEAL \textsc{et al.}}
+\keywords{causal inference | empirical Monte Carlo simulation | benchmarking | model alignment}
+\abstract[Abstract]{\input{0_abstract}}
+\begin{document}
+\maketitle
+
+\input{1_introduction}
+\input{2_framework}
+\input{3_simulation_design}
+\input{4_benchmarking_procedure}
+\input{5_results}
+\input{6_discussion}
+
+\bibliography{references}
+
+\clearpage
+\onecolumn
+\appendix
+\input{7_appendix}
+\end{document}
+

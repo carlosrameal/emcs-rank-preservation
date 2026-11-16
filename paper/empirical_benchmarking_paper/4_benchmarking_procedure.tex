@@ -1,0 +1,127 @@
+% !TeX root = Master.tex
+\section{Study workflow}
+\label{sec:benchmarking-procedure}
+
+The generation pipeline proceeds from the chosen design to simulated datasets and estimates; the evaluation pipeline computes estimation errors and aggregates them into performance summaries and rankings.
+
+\subsection{Generation pipeline}
+
+We organize generation into six levels, introducing indices for the design, reference dataset, simulator, Monte Carlo draw, and estimator.
+
+\medskip
+\noindent\textbf{Level 0. Choose study components:} We fix the set of designs \(\mathcal G\), the set of simulator specifications \(\mathcal S\), and the set of estimators \(\mathcal E\). For ACIC 2017-style designs, the reference covariates are also fixed as part of the design.
+
+\medskip
+\noindent\textbf{Level 1. Select a generator:} We select a design \(g\in\mathcal G\) and construct its generator \(\mathbb G_n^{g}\).
+
+\medskip
+\noindent\textbf{Level 2. Generate reference datasets:} We draw \(M=100\) reference datasets \(\mathcal D^{g,m}\) from \(\mathbb G_n^{g}\), each playing the role of the reference dataset \(\mathcal D_0\) in Equation~\eqref{eq:observed-data-causal-law}.
+
+\medskip
+\noindent\textbf{Level 3. Construct benchmarks:} For each reference dataset \(\mathcal D^{g,m}\), we fit all simulators \(s\in\mathcal S\), yielding the conditional outcome laws \(\widehat P_s^{\,g,m}(\cdot\mid X,A)\). Applying Equation~\eqref{eq:simulator-induced-estimand} to the reference covariates gives the simulator-specific benchmark:
+\begin{equation}
+\begin{gathered}
+\mathbb P_{s,n}^{g,m}:\quad
+\bigl(X_i,A_i\bigr)
+=\bigl(X_i^{g,m},A_i^{g,m}\bigr),\\
+Y_i\sim\widehat P_s^{\,g,m}\bigl(\cdot\mid X_i,A_i\bigr),\\
+\Phi_s^{g,m}
+=
+\frac1n
+\sum_{i=1}^n
+\left[
+\widehat\mu_{s,1}^{\,g,m}(X_i^{g,m})
+-
+\widehat\mu_{s,0}^{\,g,m}(X_i^{g,m})
+\right].
+\end{gathered}
+\label{eq:simulator-specific-benchmark}
+\end{equation}
+
+Using the design's true outcome-generating mechanism while keeping the reference covariates and treatment assignments fixed gives the target benchmark \(\bigl(\mathbb P_{0,n}^{g,m},\Phi_0^{g,m}\bigr)\). Notice that the target dataset law \(\mathbb P_{0,n}^{g,m}\) differs from the original generator \(\mathbb G_n^{g}\) used to produce reference datasets: their conditional outcome models are the same, but while \(\mathbb P_{0,n}^{g,m}\) redraws only outcomes, the ACIC generators redraw treatment and the N\&W generators redraw both covariates and treatment.
+
+\medskip
+\noindent\textbf{Level 4. Generate Monte Carlo datasets:} We generate \(K=1000\) datasets from each fitted-simulator benchmark and from the target benchmark:
+\[
+\begin{gathered}
+\widetilde{\mathcal D}_{s,n}^{g,m,k}
+\overset{\mathrm{iid}}{\sim}\mathbb P_{s,n}^{g,m},
+\qquad s\in\mathcal S,\\
+\mathcal D_{0,n}^{g,m,k}
+\overset{\mathrm{iid}}{\sim}\mathbb P_{0,n}^{g,m},
+\qquad k=1,\dots,K.
+\end{gathered}
+\]
+
+\medskip
+\noindent\textbf{Level 5. Apply causal estimators:} Each estimator \(e\in\mathcal E\) is applied to every simulator-induced and target-benchmark dataset, yielding \(\widehat\Phi_{e}^{\,g,m,s,k}\).
+
+\input{figures/generation_pipeline}
+
+\subsection{Evaluation pipeline}
+
+The evaluation pipeline moves from higher to lower levels, aggregating estimates into summaries:
+
+\medskip
+
+\noindent\textbf{Level 5. Compute estimation errors:} For each estimate under a fitted simulator \(s\in\mathcal S\), we compute the error relative to its benchmark estimand,
+
+\[
+\mathrm{Err}_{e}^{\,g,m,s,k}
+=
+\widehat{\Phi}_{e}^{\,g,m,s,k}
+-
+\Phi_s^{g,m}.
+\]
+For the target benchmark, \(\mathrm{Err}_{e}^{\,g,m,0,k}=\widehat\Phi_{e}^{\,g,m,0,k}-\Phi_0^{g,m}\).
+
+\medskip
+
+\noindent\textbf{Level 4. Summarize estimator performance:} For each fitted or target benchmark, the \(K\) estimation errors give the Monte Carlo MSE, \(\widehat{\mathrm{MSE}}^{g,m,s}(e)=K^{-1}\sum_{k=1}^K(\mathrm{Err}_e^{g,m,s,k})^2\), with \(s=0\) for the target benchmark.
+
+\medskip
+
+\noindent\textbf{Level 3. Rank estimators by MSE:} We rank the estimators by MSE under each simulator-induced and target benchmark. These are the empirical counterparts of the rankings in Equation~\eqref{eq:ranking-preservation}. We denote the rankings estimated from \(K\) draws by \(\widehat R_{\mathrm{MSE}}^{\,g,m,s}\) under simulator \(s\) and \(\widehat R_{\mathrm{MSE}}^{\,g,m,0}\) under the target benchmark. Rank 1 denotes the lowest MSE. The target-benchmark ranking is used as the comparator in the following calculations.
+
+\medskip
+
+\noindent\textbf{Level 2. Compare rankings with target:} For each reference dataset \(m\), we measure ranking fidelity by \(\rho^{g,m,s}\), the Spearman correlation between the estimator rankings under fitted simulator \(s\) and the target benchmark, i.e., Pearson correlation applied to the ranks.
+
+To assess model alignment, we repeat this computation after excluding from both rankings the estimators aligned with simulator \(s\), denoting the result by \(\rho_{\mathrm{excl}}^{g,m,s}\). For each reference dataset \(m\) and simulator \(s\), we also compute \emph{rank promotion}, \(\mathrm{Prom}^{g,m,s}(e)\): estimator \(e\)'s position in the target-benchmark ranking minus its position in \(\widehat R_{\mathrm{MSE}}^{\,g,m,s}\). Positive mean promotion indicates a tendency to rank estimators higher under the simulator than under the target benchmark. For a simulator with aligned estimators, we consider the G-comp, AIPW, and TMLE estimators using its outcome learner. We also report absolute rank shifts, given by the absolute values of these promotions, and compare both measures with the corresponding averages over non-aligned estimators (Rest). We use \(\boldsymbol{\mathrm{Prom}}^{g,m,s}\) to denote the vector collecting promotions and absolute rank shifts for these three estimators.
+
+For each reference dataset, we also aggregate the five simulator rankings by averaging each estimator's MSE rank across simulators and ranking these averages. In the alignment-excluded version, each estimator's average uses only simulators with which it is not aligned; all estimators remain in the aggregate ranking.
+
+We also compute the estimand gap \(\Delta\Phi_s^{g,m}=\Phi_s^{g,m}-\Phi_0^{g,m}\) to examine whether smaller absolute gaps accompany higher ranking fidelity.
+
+We ask whether simulator-based selection improves on using the associated G-comp estimator. For each reference dataset $m$ and simulator $s$, we compare three rules, each selecting an estimator $\widehat e_r^{g,m,s}\in\mathcal E$:
+\begin{enumerate}
+    \item \emph{G-comp}: the associated G-computation estimator, chosen without consulting the simulator ranking;
+    \item \emph{All}: the estimator minimizing simulator MSE among all 15 estimators;
+    \item \emph{Excl.}: the estimator minimizing simulator MSE among non-aligned estimators.
+\end{enumerate}
+Following \authorcite{advaniMostlyHarmlessSimulations2019}, \emph{relative MSE regret} measures percentage excess target-benchmark MSE over the best of all 15 estimators:
+\begin{equation}
+\mathrm{Reg}^{g,m}(e)
+=100\left\{
+\frac{\widehat{\mathrm{MSE}}^{g,m,0}(e)}
+{\min_{j\in\mathcal E}\widehat{\mathrm{MSE}}^{g,m,0}(j)}-1
+\right\}.
+\label{eq:relative-mse-regret}
+\end{equation}
+Thus, 0 means matching the target-best MSE and 100 means twice that MSE. The vector \(\boldsymbol{\mathrm{Reg}}^{g,m,s}\) collects the regrets of the G-comp, All, and Excl. rules, in that order. Table~\ref{tab:gcomp-selection} reports the mean regret for each rule over the $M=100$ reference datasets; lower values are better. WGAN is omitted because it has no associated G-comp estimator to serve as the default.
+
+We assess the similarity between real and synthetic outcomes using the Wasserstein-1 (\(W_1\)), Kolmogorov--Smirnov (KS), and energy distances. Each distance is averaged over the \(K\) Monte Carlo datasets; the vector \(\boldsymbol d^{g,m,s}\) collects these values in the order \(W_1\), KS, energy. For each reference dataset, we compute the Pearson correlation between distance and ranking fidelity across the five simulators, then average these correlations within each setting. Appendix~\ref{app:distances} gives further details.
+
+\medskip
+
+\noindent\textbf{Level 1. Average comparison metrics:} For each design \(g\) and simulator \(s\), we average across the \(M\) reference datasets to obtain the mean rank correlations \(\bar\rho^{g,s}\) and \(\bar\rho_{\mathrm{excl}}^{g,s}\), the mean absolute estimand gap \(\overline{|\Delta\Phi_s|}^{g}=M^{-1}\sum_{m=1}^{M}|\Delta\Phi_s^{g,m}|\), the mean promotions and absolute rank shifts \(\overline{\boldsymbol{\mathrm{Prom}}}^{g,s}\), the mean regrets \(\overline{\boldsymbol{\mathrm{Reg}}}^{g,s}\), and the mean distances \(\overline{\boldsymbol d}^{g,s}=M^{-1}\sum_{m=1}^{M}\boldsymbol d^{g,m,s}\). Bars denote means over reference datasets. Simulators are ranked by their mean rank correlations.
+
+\medskip
+
+\noindent\textbf{Level 0. Draw general conclusions:} Finally, results are compared across DGPs to assess whether conclusions regarding ranking fidelity, simulator performance, and model alignment are consistent across the different data-generating processes.
+
+\medskip
+
+This evaluation pipeline is summarized in Figure~\ref{fig:evaluation_pipeline}.
+
+\input{figures/evaluation_pipeline}
